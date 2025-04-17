@@ -1,0 +1,8 @@
+{
+  "name": "web-automation",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "git@github.com:Yongbeom-Kim/web-automation.git",
+  "author": "Kim Yongbeom <dernbu@gmail.com>",
+  "license": "MIT"
+}
