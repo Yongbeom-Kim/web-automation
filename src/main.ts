@@ -1,5 +1,7 @@
 // patchright here!
 import { chromium, BrowserContext, Page } from 'patchright'
+import { newGoogleSearch } from './site_specific/google/search'
+import { sleep } from './common/utils'
 ;(async (): Promise<void> => {
 	const browser: BrowserContext = await chromium.launchPersistentContext(
 		'...',
@@ -10,9 +12,12 @@ import { chromium, BrowserContext, Page } from 'patchright'
 			// do NOT add custom browser headers or userAgent
 		}
 	)
-	const page = await browser.newPage()
-	await page.goto('http://example.com')
-	// other actions...
-	await page.waitForTimeout(10000)
-	await browser.close()
+	// const page = await browser.newPage()
+	// await page.goto('https://www.google.com')
+	// // other actions...
+	// await page.waitForTimeout(10000)
+	// await browser.close()
+
+	await newGoogleSearch(browser, 'large language models')
+	await sleep(10000)
 })()
