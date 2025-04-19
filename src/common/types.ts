@@ -8,8 +8,8 @@ export type Point = {
 }
 
 export type Dimensions = {
-  width: number
-  height: number
+	width: number
+	height: number
 }
 
 export type Rectangle = Dimensions & Point

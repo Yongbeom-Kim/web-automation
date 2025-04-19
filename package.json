@@ -19,6 +19,6 @@
 		"main": "tsx src/main.ts",
 		"format": "prettier --write .",
 		"fmt": "prettier --write .",
-		"setup": "chmod a+x .git/hooks/pre-commit && cat precommit.sh >> .git/hooks/pre-commit"
+		"setup": "echo \"#!/bin/bash\n./precommit.sh\" >> .git/hooks/pre-commit"
 	}
 }

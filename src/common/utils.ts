@@ -33,9 +33,8 @@ export function randomGaussian(mean: ms, std: ms): ms {
  * @returns A random number following the specified normal distribution, capped between min and max
  */
 export function cappedRandomGaussian(mean: ms, std: ms, min: ms, max: ms): ms {
-    return Math.min(Math.max(randomGaussian(mean, std), min), max)
+	return Math.min(Math.max(randomGaussian(mean, std), min), max)
 }
-
 
 /**
  * Generates a random number between a minimum and maximum value.
@@ -52,7 +51,6 @@ export const sleepRandom = (mean: ms, std: ms): Promise<void> => {
 	const delay = randomGaussian(mean, std)
 	return sleep(delay)
 }
-
 
 export const getViewportSize = async (page: Page): Promise<Dimensions> => {
 	const viewportSize = await page.evaluate(() => ({

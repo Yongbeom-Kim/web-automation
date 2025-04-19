@@ -1,13 +1,19 @@
 import { chromium, Page, ViewportSize } from 'patchright'
-import { cappedRandomGaussian, getViewportSize, randBetween, sleep, sleepRandom } from '../common/utils'
+import {
+	cappedRandomGaussian,
+	getViewportSize,
+	randBetween,
+	sleep,
+	sleepRandom,
+} from '../common/utils'
 import { debug, error, fatal } from '../common/logging'
-import { Point, Rectangle } from '../common/types';
+import { Point, Rectangle } from '../common/types'
 
 class ElementError extends Error {
-  constructor(message: string) {
-    super(message);
-    this.name = 'ElementError';
-  }
+	constructor(message: string) {
+		super(message)
+		this.name = 'ElementError'
+	}
 }
 
 // Track last mouse position globally
@@ -38,62 +44,93 @@ function getBezierPoint(
 	return { x, y }
 }
 
-const WHEEL_DELTA = 120;
-
+const WHEEL_DELTA = 120
 
 async function humanScrollToY(page: Page, y: number): Promise<void> {
 	// TODO: implement horizontal scrolling.
 	const vp = await getViewportSize(page)
 	const viewportTopY = await page.evaluate(() => window.scrollY) // Coordinate of top of page
-  const viewportCenterY = viewportTopY + vp.height / 2
+	const viewportCenterY = viewportTopY + vp.height / 2
 	const diffY = y - viewportCenterY
-  debug("Human Scroll: Scroll to Y", "viewportPos", viewportCenterY, "targetPos", y)
+	debug(
+		'Human Scroll: Scroll to Y',
+		'viewportPos',
+		viewportCenterY,
+		'targetPos',
+		y
+	)
 
-  if (Math.abs(diffY) < WHEEL_DELTA) {
-    debug("Human Scroll: Scroll to Y is too close to current scroll position, skipping", "viewportPos", viewportCenterY, "targetPos", y)
-    return;
-  }
-  
-  const steps = Math.round(Math.abs(diffY) / WHEEL_DELTA)
-  const stepSize = Math.sign(diffY) * WHEEL_DELTA // Use consistent step size based on direction
+	if (Math.abs(diffY) < WHEEL_DELTA) {
+		debug(
+			'Human Scroll: Scroll to Y is too close to current scroll position, skipping',
+			'viewportPos',
+			viewportCenterY,
+			'targetPos',
+			y
+		)
+		return
+	}
 
-  for (let i = 0; i < steps; i++) {
-    await page.mouse.wheel(0, stepSize)
-    await sleepRandom(100, 25)
-  }
+	const steps = Math.round(Math.abs(diffY) / WHEEL_DELTA)
+	const stepSize = Math.sign(diffY) * WHEEL_DELTA // Use consistent step size based on direction
+
+	for (let i = 0; i < steps; i++) {
+		await page.mouse.wheel(0, stepSize)
+		await sleepRandom(100, 25)
+	}
 }
 
 // Simulate human-like scroll to bring element into view
 async function humanScrollElement(page: Page, selector: string): Promise<void> {
-  // TODO: only assumes that we scroll vertically, not horizontally.
+	// TODO: only assumes that we scroll vertically, not horizontally.
 	const vp = await getViewportSize(page)
 	const handle = await page.$(selector)
 	if (!handle) {
-    error("Human Scroll: Element not found", "selector", selector)
-    throw new ElementError(`Element not found: ${selector}`)
-  }
+		error('Human Scroll: Element not found', 'selector', selector)
+		throw new ElementError(`Element not found: ${selector}`)
+	}
 
-  const boundingBox = await handle.boundingBox()
-  if (!boundingBox) {
-    error("Human Scroll: Element bounding box not found", "selector", selector)
-    throw new ElementError(`Element bounding box not found: ${selector}`)
-  }
+	const boundingBox = await handle.boundingBox()
+	if (!boundingBox) {
+		error('Human Scroll: Element bounding box not found', 'selector', selector)
+		throw new ElementError(`Element bounding box not found: ${selector}`)
+	}
 
-  const {y: elemY, height: elemHeight} = boundingBox
-  const elemCenterY = elemY + elemHeight / 2
-  const minScrollYPos = elemCenterY - vp.height / 2 + 100
-  const maxScrollYPos = elemCenterY + vp.height / 2 - 100
-  const scrollYPos = cappedRandomGaussian((maxScrollYPos+minScrollYPos)/2, (maxScrollYPos-minScrollYPos)/4, minScrollYPos, maxScrollYPos)
+	const { y: elemY, height: elemHeight } = boundingBox
+	const elemCenterY = elemY + elemHeight / 2
+	const minScrollYPos = elemCenterY - vp.height / 2 + 100
+	const maxScrollYPos = elemCenterY + vp.height / 2 - 100
+	const scrollYPos = cappedRandomGaussian(
+		(maxScrollYPos + minScrollYPos) / 2,
+		(maxScrollYPos - minScrollYPos) / 4,
+		minScrollYPos,
+		maxScrollYPos
+	)
 
-  await humanScrollToY(page, scrollYPos)
+	await humanScrollToY(page, scrollYPos)
 }
 
-export async function humanScrollAround(page: Page, n_times: number): Promise<void> {
+export async function humanScrollAround(
+	page: Page,
+	n_times: number
+): Promise<void> {
 	// Perform smooth scroll
 	for (let i = 0; i < n_times; i++) {
-    const totalHeight = await page.evaluate(() => document.documentElement.scrollHeight);
-    const scrollYPosMean = cappedRandomGaussian(totalHeight/2, totalHeight/12, totalHeight/4, totalHeight*3/4)
-		const scrollYPos = cappedRandomGaussian(scrollYPosMean, totalHeight/4, 0, totalHeight)
+		const totalHeight = await page.evaluate(
+			() => document.documentElement.scrollHeight
+		)
+		const scrollYPosMean = cappedRandomGaussian(
+			totalHeight / 2,
+			totalHeight / 12,
+			totalHeight / 4,
+			(totalHeight * 3) / 4
+		)
+		const scrollYPos = cappedRandomGaussian(
+			scrollYPosMean,
+			totalHeight / 4,
+			0,
+			totalHeight
+		)
 		await humanScrollToY(page, scrollYPos)
 		await sleepRandom(500, 250) // Mean: 500ms, Std: 250ms
 	}

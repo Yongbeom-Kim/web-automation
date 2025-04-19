@@ -8,8 +8,8 @@ export async function newGoogleSearch(
 ) {
 	const page = await context.newPage()
 	await page.goto(`https://www.google.com/`)
-  await humanType(page, searchQuery)
-  await humanType(page, '\n')
-  await sleepRandom(1500, 250)
+	await humanType(page, searchQuery)
+	await humanType(page, '\n')
+	await sleepRandom(1500, 250)
 	await humanScrollAround(page, 5)
 }

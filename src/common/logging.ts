@@ -43,8 +43,8 @@ function error(...message: any[]) {
 }
 
 function fatal(...message: any[]): never {
-  console.error(`[FATAL] ${new Error().stack}\n`, ...message)
-  process.exit(1)
+	console.error(`[FATAL] ${new Error().stack}\n`, ...message)
+	process.exit(1)
 }
 
 // Function to set the current log level
