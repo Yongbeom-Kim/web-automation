@@ -4,5 +4,8 @@
   "main": "index.js",
   "repository": "git@github.com:Yongbeom-Kim/web-automation.git",
   "author": "Kim Yongbeom <dernbu@gmail.com>",
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "patchright": "^1.51.3"
+  }
 }
