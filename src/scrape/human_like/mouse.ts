@@ -5,9 +5,9 @@ import {
 	randBetween,
 	sleep,
 	sleepRandom,
-} from '../common/utils'
-import { debug, error, fatal } from '../common/logging'
-import { Point, Rectangle } from '../common/types'
+} from '../../common/utils'
+import { debug, error, fatal } from '../../common/logging'
+import { Point, Rectangle } from '../../common/types'
 
 class ElementError extends Error {
 	constructor(message: string) {

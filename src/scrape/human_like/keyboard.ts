@@ -1,7 +1,7 @@
 import type { Page } from 'patchright'
-import { ms } from '../common/types'
-import { warn } from '../common/logging'
-import { sleep, randomGaussian } from '../common/utils'
+import { ms } from '../../common/types'
+import { warn } from '../../common/logging'
+import { sleep, randomGaussian } from '../../common/utils'
 
 export type HumanTypeOptions = {
 	delayMean: ms // avg ms between keystrokes

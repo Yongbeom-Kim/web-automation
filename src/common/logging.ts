@@ -18,32 +18,70 @@ function shouldLog(level: LogLevel): boolean {
 	return level >= currentLogLevel
 }
 
-function debug(...message: any[]) {
+type Prev = [never, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+type StructuredMessages<T, S, D extends number = 10> = D extends 0
+	? []
+	: [] | [T, S, ...StructuredMessages<T, S, Prev[D]>]
+
+function structure(...message: StructuredMessages<string, any>) {
+	const obj: Record<string, any> = {}
+	for (let i = 0; i < message.length; i += 2) {
+		obj[message[i]] = message[i + 1]
+	}
+	return JSON.stringify(obj)
+}
+
+function debug(
+	logMessage: string,
+	...message: StructuredMessages<string, any>
+) {
 	if (shouldLog(LogLevel.DEBUG)) {
-		console.log(`[DEBUG] ${getCallerInfo()}`, ...message)
+		console.log(
+			`[DEBUG] ${getCallerInfo()}:`,
+			logMessage,
+			structure(...message)
+		)
 	}
 }
 
-function info(...message: any[]) {
+function info(logMessage: string, ...message: StructuredMessages<string, any>) {
 	if (shouldLog(LogLevel.INFO)) {
-		console.log(`[INFO] ${getCallerInfo()}`, ...message)
+		console.log(`[INFO] ${getCallerInfo()}:`, logMessage, structure(...message))
 	}
 }
 
-function warn(...message: any[]) {
+function warn(logMessage: string, ...message: StructuredMessages<string, any>) {
 	if (shouldLog(LogLevel.WARN)) {
-		console.warn(`[WARN] ${getCallerInfo()}`, ...message)
+		console.warn(
+			`[WARN] ${getCallerInfo()}:`,
+			logMessage,
+			structure(...message)
+		)
 	}
 }
 
-function error(...message: any[]) {
+function error(
+	logMessage: string,
+	...message: StructuredMessages<string, any>
+) {
 	if (shouldLog(LogLevel.ERROR)) {
-		console.error(`[ERROR] ${getCallerInfo()}`, ...message)
+		console.error(
+			`[ERROR] ${getCallerInfo()}:`,
+			logMessage,
+			structure(...message)
+		)
 	}
 }
 
-function fatal(...message: any[]): never {
-	console.error(`[FATAL] ${new Error().stack}\n`, ...message)
+function fatal(
+	logMessage: string,
+	...message: StructuredMessages<string, any>
+): never {
+	console.error(
+		`[FATAL] ${new Error().stack}\n`,
+		logMessage,
+		structure(...message)
+	)
 	process.exit(1)
 }
 
